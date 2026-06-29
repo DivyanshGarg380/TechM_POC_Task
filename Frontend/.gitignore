@@ -1,9 +1,4 @@
-# Dependencies
 node_modules/
+.angular/
 dist/
-.env
 *.log
-.vscode/
-.DS_Store
-Thumbs.db
-.vite/

@@ -1,0 +1,73 @@
+<div class="page">
+  <header class="hero">
+    <h1>👥 Employee Management Hub</h1>
+    <p>Manage your team, all in one place</p>
+  </header>
+
+  <div class="toolbar">
+    <input
+      class="search"
+      type="text"
+      placeholder="Search by name..."
+      [(ngModel)]="searchTerm"
+      (keyup.enter)="search()"
+    />
+    <button class="btn btn-ghost" (click)="search()">Search</button>
+    <button class="btn btn-ghost" (click)="searchTerm=''; load()">Reset</button>
+    <button class="btn btn-primary" (click)="openAdd()">+ Add Employee</button>
+  </div>
+
+  <div class="card-grid">
+    <div class="emp-card" *ngFor="let emp of employees()">
+      <div class="emp-avatar">{{ emp.name.charAt(0).toUpperCase() }}</div>
+      <h3>{{ emp.name }}</h3>
+      <p class="email">{{ emp.email }}</p>
+      <div class="emp-meta">
+        <span class="badge">{{ emp.department }}</span>
+        <span class="salary">₹{{ emp.salary | number }}</span>
+      </div>
+      <p class="joining">Joined: {{ emp.joiningDate }}</p>
+      <div class="emp-actions">
+        <button class="btn btn-sm btn-edit" (click)="openEdit(emp)">Edit</button>
+        <button class="btn btn-sm btn-del" (click)="remove(emp.id)">Delete</button>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="employees().length === 0">
+      No employees found.
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="!searchTerm">
+    <button class="btn btn-ghost" (click)="prevPage()" [disabled]="page === 0">‹ Prev</button>
+    <span>Page {{ page + 1 }} of {{ totalPages || 1 }}</span>
+    <button class="btn btn-ghost" (click)="nextPage()" [disabled]="page >= totalPages - 1">Next ›</button>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="showForm" (click)="cancel()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>{{ editingId ? 'Edit Employee' : 'Add Employee' }}</h2>
+      <form (ngSubmit)="save()">
+        <label>Name</label>
+        <input type="text" [(ngModel)]="form.name" name="name" required />
+
+        <label>Email</label>
+        <input type="email" [(ngModel)]="form.email" name="email" required />
+
+        <label>Department</label>
+        <input type="text" [(ngModel)]="form.department" name="department" required />
+
+        <label>Salary</label>
+        <input type="number" [(ngModel)]="form.salary" name="salary" required />
+
+        <label>Joining Date</label>
+        <input type="date" [(ngModel)]="form.joiningDate" name="joiningDate" required />
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
