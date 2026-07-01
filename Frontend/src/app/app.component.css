@@ -142,13 +142,6 @@ body {
   box-shadow: 0 22px 55px rgba(15,23,42,.14);
 }
 
-.card-header {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  margin-bottom: 22px;
-}
-
 .emp-avatar {
   width: 58px;
   height: 58px;
@@ -170,29 +163,6 @@ body {
 .emp-info h3 {
   font-size: 20px;
   color: #0f172a;
-}
-
-.email {
-  margin-top: 6px;
-  color: #64748b;
-  font-size: 14px;
-  word-break: break-word;
-}
-
-.emp-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.badge {
-  background: #eef2ff;
-  color: #4f46e5;
-  padding: 8px 14px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
 }
 
 .salary {
@@ -371,4 +341,74 @@ body {
   .pagination {
     flex-wrap: wrap;
   }
+}
+
+.card-top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+}
+
+.profile{
+display:flex;
+align-items:center;
+gap:14px;
+}
+
+.role{
+display:inline-block;
+margin-top:4px;
+font-size:13px;
+color:#64748b;
+}
+
+.menu-btn{
+width:36px;
+height:36px;
+border:none;
+background:#f1f5f9;
+border-radius:10px;
+cursor:pointer;
+font-size:18px;
+transition:.2s;
+}
+
+.menu-btn:hover{
+background:#e2e8f0;
+}
+
+.email-row{
+display:flex;
+align-items:center;
+gap:10px;
+color:#475569;
+font-size:14px;
+margin-bottom:18px;
+}
+
+.divider{
+height:1px;
+background:#e2e8f0;
+margin:18px 0;
+}
+
+.details{
+display:flex;
+flex-direction:column;
+gap:14px;
+}
+
+.detail{
+display:flex;
+align-items:center;
+gap:12px;
+font-size:15px;
+color:#334155;
+}
+
+.icon{
+width:24px;
+text-align:center;
+font-size:16px;
 }

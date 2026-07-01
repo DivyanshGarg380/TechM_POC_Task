@@ -2,11 +2,10 @@
   <header class="hero">
     <div>
       <h1>Employee Management Hub</h1>
-      <p>Manage your workforce with a modern dashboard.</p>
     </div>
 
     <button class="btn btn-primary" (click)="openAdd()">
-      + Add Employee
+      Add Employee
     </button>
   </header>
 
@@ -34,53 +33,66 @@
   </div>
 
   <div class="card-grid">
-    <div
-      class="emp-card"
-      *ngFor="let emp of employees()"
-    >
-    
-      <div class="card-header">
+    <div class="emp-card" *ngFor="let emp of employees()">
+      <div class="card-top">
 
-        <div class="emp-avatar">
-          {{ emp.name.charAt(0).toUpperCase() }}
+        <div class="profile">
+
+          <div class="emp-avatar">
+            {{ emp.name.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="emp-info">
+            <h3>{{ emp.name }}</h3>
+            <span class="role">Employee</span>
+          </div>
+
         </div>
 
-        <div class="emp-info">
-          <h3>{{ emp.name }}</h3>
-          <p class="email">{{ emp.email }}</p>
+      </div>
+
+      <div class="email-row">
+
+        <span class="icon">✉</span>
+
+        <span>{{ emp.email }}</span>
+
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="details">
+
+        <div class="detail">
+          <span class="icon">🏢</span>
+          <span>{{ emp.department }}</span>
+        </div>
+
+        <div class="detail">
+          <span class="icon">💰</span>
+          <span class="salary">₹{{ emp.salary | number }}</span>
+        </div>
+
+        <div class="detail">
+          <span class="icon">📅</span>
+          <span>{{ emp.joiningDate }}</span>
         </div>
 
       </div>
 
-      <div class="emp-meta">
-
-        <span class="badge">
-          {{ emp.department }}
-        </span>
-
-        <span class="salary">
-          ₹{{ emp.salary | number }}
-        </span>
-
-      </div>
-
-      <div class="joining">
-        Joined {{ emp.joiningDate }}
-      </div>
+      <div class="divider"></div>
 
       <div class="emp-actions">
 
         <button
           class="btn btn-sm btn-edit"
-          (click)="openEdit(emp)"
-        >
+          (click)="openEdit(emp)">
           Edit
         </button>
 
         <button
           class="btn btn-sm btn-del"
-          (click)="remove(emp.id)"
-        >
+          (click)="remove(emp.id)">
           Delete
         </button>
 
