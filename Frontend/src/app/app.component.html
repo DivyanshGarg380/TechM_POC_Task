@@ -1,73 +1,210 @@
 <div class="page">
   <header class="hero">
-    <h1>👥 Employee Management Hub</h1>
-    <p>Manage your team, all in one place</p>
+    <div>
+      <h1>Employee Management Hub</h1>
+      <p>Manage your workforce with a modern dashboard.</p>
+    </div>
+
+    <button class="btn btn-primary" (click)="openAdd()">
+      + Add Employee
+    </button>
   </header>
 
   <div class="toolbar">
-    <input
-      class="search"
-      type="text"
-      placeholder="Search by name..."
-      [(ngModel)]="searchTerm"
-      (keyup.enter)="search()"
-    />
-    <button class="btn btn-ghost" (click)="search()">Search</button>
-    <button class="btn btn-ghost" (click)="searchTerm=''; load()">Reset</button>
-    <button class="btn btn-primary" (click)="openAdd()">+ Add Employee</button>
+    <div class="search-box">
+      <input
+        class="search"
+        type="text"
+        placeholder="Search employees..."
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="search()"
+      />
+    </div>
+
+    <button class="btn btn-secondary" (click)="search()">
+      Search
+    </button>
+
+    <button
+      class="btn btn-secondary"
+      (click)="searchTerm=''; load()"
+    >
+      Reset
+    </button>
   </div>
 
   <div class="card-grid">
-    <div class="emp-card" *ngFor="let emp of employees()">
-      <div class="emp-avatar">{{ emp.name.charAt(0).toUpperCase() }}</div>
-      <h3>{{ emp.name }}</h3>
-      <p class="email">{{ emp.email }}</p>
+
+    <div
+      class="emp-card"
+      *ngFor="let emp of employees()"
+    >
+
+      <div class="card-header">
+
+        <div class="emp-avatar">
+          {{ emp.name.charAt(0).toUpperCase() }}
+        </div>
+
+        <div class="emp-info">
+          <h3>{{ emp.name }}</h3>
+          <p class="email">{{ emp.email }}</p>
+        </div>
+
+      </div>
+
       <div class="emp-meta">
-        <span class="badge">{{ emp.department }}</span>
-        <span class="salary">₹{{ emp.salary | number }}</span>
+
+        <span class="badge">
+          {{ emp.department }}
+        </span>
+
+        <span class="salary">
+          ₹{{ emp.salary | number }}
+        </span>
+
       </div>
-      <p class="joining">Joined: {{ emp.joiningDate }}</p>
+
+      <div class="joining">
+        Joined {{ emp.joiningDate }}
+      </div>
+
       <div class="emp-actions">
-        <button class="btn btn-sm btn-edit" (click)="openEdit(emp)">Edit</button>
-        <button class="btn btn-sm btn-del" (click)="remove(emp.id)">Delete</button>
+
+        <button
+          class="btn btn-sm btn-edit"
+          (click)="openEdit(emp)"
+        >
+          Edit
+        </button>
+
+        <button
+          class="btn btn-sm btn-del"
+          (click)="remove(emp.id)"
+        >
+          Delete
+        </button>
+
       </div>
+
     </div>
 
-    <div class="empty" *ngIf="employees().length === 0">
-      No employees found.
+    <div
+      class="empty"
+      *ngIf="employees().length===0"
+    >
+      <h2>No Employees Found</h2>
+      <p>Try searching with another keyword.</p>
     </div>
+
   </div>
 
-  <div class="pagination" *ngIf="!searchTerm">
-    <button class="btn btn-ghost" (click)="prevPage()" [disabled]="page === 0">‹ Prev</button>
-    <span>Page {{ page + 1 }} of {{ totalPages || 1 }}</span>
-    <button class="btn btn-ghost" (click)="nextPage()" [disabled]="page >= totalPages - 1">Next ›</button>
+  <div
+    class="pagination"
+    *ngIf="!searchTerm"
+  >
+
+    <button
+      class="btn btn-secondary"
+      (click)="prevPage()"
+      [disabled]="page===0"
+    >
+      ← Previous
+    </button>
+
+    <span>
+      Page {{ page + 1 }} of {{ totalPages || 1 }}
+    </span>
+
+    <button
+      class="btn btn-secondary"
+      (click)="nextPage()"
+      [disabled]="page>=totalPages-1"
+    >
+      Next →
+    </button>
+
   </div>
 
-  <div class="modal-backdrop" *ngIf="showForm" (click)="cancel()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h2>{{ editingId ? 'Edit Employee' : 'Add Employee' }}</h2>
+  <div
+    class="modal-backdrop"
+    *ngIf="showForm"
+    (click)="cancel()"
+  >
+
+    <div
+      class="modal"
+      (click)="$event.stopPropagation()"
+    >
+
+      <h2>
+        {{ editingId ? 'Edit Employee' : 'Add Employee' }}
+      </h2>
+
       <form (ngSubmit)="save()">
+
         <label>Name</label>
-        <input type="text" [(ngModel)]="form.name" name="name" required />
+        <input
+          type="text"
+          [(ngModel)]="form.name"
+          name="name"
+          required
+        />
 
         <label>Email</label>
-        <input type="email" [(ngModel)]="form.email" name="email" required />
+        <input
+          type="email"
+          [(ngModel)]="form.email"
+          name="email"
+          required
+        />
 
         <label>Department</label>
-        <input type="text" [(ngModel)]="form.department" name="department" required />
+        <input
+          type="text"
+          [(ngModel)]="form.department"
+          name="department"
+          required
+        />
 
         <label>Salary</label>
-        <input type="number" [(ngModel)]="form.salary" name="salary" required />
+        <input
+          type="number"
+          [(ngModel)]="form.salary"
+          name="salary"
+          required
+        />
 
         <label>Joining Date</label>
-        <input type="date" [(ngModel)]="form.joiningDate" name="joiningDate" required />
+        <input
+          type="date"
+          [(ngModel)]="form.joiningDate"
+          name="joiningDate"
+          required
+        />
 
         <div class="modal-actions">
-          <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save</button>
+
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancel()"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+          >
+            Save Employee
+          </button>
+
         </div>
+
       </form>
+
     </div>
+
   </div>
 </div>
