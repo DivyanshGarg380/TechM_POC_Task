@@ -6,9 +6,9 @@ services:
     container_name: employee-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: <password>
+      MYSQL_DATABASE: Starman_OG
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
