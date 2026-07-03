@@ -6,7 +6,7 @@ services:
     container_name: employee-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: Starman_OG
+      MYSQL_DATABASE: employee_db
     ports:
       - "3307:3306"
     volumes:
