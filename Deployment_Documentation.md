@@ -1,40 +1,14 @@
-# Dockerize & Automate Deployment Using Jenkins
+# Dockerizing and Automating Deployment with Jenkins
+*Employee Management System - Spring Boot POC*
 
-Project: `employee-management-system` (Spring Boot 3.5.0, Java 17, MySQL)
+## What this task was about
 
-**Repo layout** (`Employee_Management_Hub/`):
-```
-Employee_Management_Hub/
-├── Backend/            ← Spring Boot app + Dockerfile goes here
-├── Frontend/
-├── docker-compose.yml  ← at repo root
-├── Jenkinsfile         ← at repo root
-└── README.md
-```
+The goal was to take the Employee Management System backend (Spring Boot, Java 17, MySQL) that I'd already built as a POC, and set up a proper build-and-deploy pipeline for it using Docker and Jenkins, instead of running it manually every time.
 
-## 1. Jenkins Basics & Setup
+## Docker setup
 
-Jenkins is an open-source automation server used to build CI/CD pipelines: pulling code, building it, testing it, and deploying it automatically on every change.
+I installed Docker Desktop and wrote a Dockerfile for the Backend module. I used a two-stage build: the first stage uses a Maven + JDK 17 image to compile the project into a jar, and the second stage copies just that jar into a lightweight JRE-only image. This keeps the final image small since it doesn't carry Maven or the source code with it.
 
-**Run Jenkins via Docker (recommended, no local install needed):**
-```bash
-docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -u root \
-  jenkins/jenkins:lts
-```
-- `-v /var/run/docker.sock:/var/run/docker.sock` lets Jenkins run `docker build`/`docker run` on the host's Docker engine.
-- Get the initial admin password: `docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword`
-- Open `http://localhost:8080`, install suggested plugins, create an admin user.
-- Install the **Docker Pipeline** plugin (Manage Jenkins → Plugins) so `docker` CLI steps work in the pipeline.
-- Since the app also needs port 8080, either run the app container on a different host port (e.g. 8081:8080) or run Jenkins on a different port (e.g. `-p 9090:8080`).
-
-## 2. Docker Setup
-
-Install Docker Desktop (Windows/Mac) or Docker Engine (Linux) and verify with `docker --version`.
-
-**Dockerfile** (multi-stage build — compiles with Maven, runs on a lightweight JRE):
 ```dockerfile
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
@@ -50,47 +24,94 @@ EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
 ```
 
-**Build & run:**
-```bash
-docker build -t employee-management-system:latest .
-docker run -d --name employee-app -p 8080:8080 employee-management-system:latest
-```
+Since the app also needs a MySQL database, I added a `docker-compose.yml` at the repo root that spins up both the app container and a MySQL container together, and points the app at the database using the service name (`mysql`) instead of `localhost`.
 
-Since the app needs MySQL, use `docker-compose.yml` (included) to spin up both the app and a MySQL container together:
+To build and run it locally:
 ```bash
 docker compose up -d --build
 ```
 
-Verify at `http://localhost:8080/swagger-ui.html`.
+I confirmed the app was reachable at `http://localhost:8080/swagger-ui.html` once both containers were up.
 
-## 3. Jenkins Pipeline
+## Jenkins setup
 
-A `Jenkinsfile` (Declarative Pipeline, included) automates:
-1. **Checkout** – pulls latest code from the Git repo.
-2. **Build with Maven** – `mvn clean package -DskipTests` produces the jar.
-3. **Build Docker Image** – tags the image with `${BUILD_NUMBER}` and `latest`.
-4. **Stop Old Container** – stops/removes any previously running container.
-5. **Run New Container** – starts a fresh container from the latest image.
+Rather than installing Jenkins directly on my machine, I ran it as a container, which was simpler to set up and tear down:
 
-**Setup in Jenkins UI:**
-1. New Item → Pipeline → name it (e.g. `employee-app-pipeline`).
-2. Pipeline → Definition → "Pipeline script from SCM" → Git → paste your repo URL → set script path to `Jenkinsfile`.
-3. Click **Build Now** to trigger manually, or add a **GitHub webhook** / **Poll SCM** trigger for automatic builds on push.
+```bash
+docker run -d --name jenkins -p 9090:8080 -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -u root \
+  jenkins/jenkins:lts
+```
 
-## 4. Screenshots to Capture (for submission)
+I mapped Jenkins to port 9090 on the host since 8080 is already used by the app itself. The Docker socket is mounted in so that Jenkins (which itself runs inside a container) can issue `docker build`/`run` commands against the host's Docker engine, without this, the pipeline can't build or start containers at all.
 
-- Jenkins Dashboard showing the pipeline job.
-- Pipeline stage view after a successful build (all green stages).
-- `docker images` output showing the built image.
-- `docker ps` output showing the running container.
-- Browser screenshot hitting `http://localhost:8080/swagger-ui.html` (or your app's endpoint).
+After the container was up, I grabbed the initial admin password, went through the setup wizard, installed the suggested plugins, and additionally installed the **Docker Pipeline** plugin, which is needed for the `docker` steps in the pipeline to work.
 
-## 5. Common Challenges & Fixes
+## The pipeline itself
 
-| Challenge | Fix |
-|---|---|
-| Jenkins container can't run `docker` commands | Mount `/var/run/docker.sock` into the Jenkins container and install the Docker Pipeline plugin |
-| Port 8080 conflict between Jenkins and the app | Map Jenkins to a different host port (e.g. `9090:8080`) or the app to `8081:8080` |
-| App container can't reach MySQL | Use `docker-compose` so both containers share a network; point `spring.datasource.url` at the MySQL **service name** (`mysql`), not `localhost` |
-| Old container blocks new container name | Add a "stop/remove old container" stage before "run new container" (included in Jenkinsfile) |
-| Jenkins permission denied on docker.sock | Run the Jenkins container with `-u root`, or add the `jenkins` user to the `docker` group on the host |
+The Jenkinsfile defines five stages that run one after another: checkout the latest code, build the project with Maven, build the Docker image, stop whatever container is currently running, and start a new one from the freshly built image.
+
+```groovy
+pipeline {
+    agent any
+    environment {
+        IMAGE_NAME = "employee-management-system"
+        CONTAINER_NAME = "employee-app"
+        APP_PORT = "8080"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: '<repo-url>'
+            }
+        }
+        stage('Build with Maven') {
+            steps {
+                dir('Backend') {
+                    sh 'mvn -B clean package -DskipTests'
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('Backend') {
+                    sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
+                }
+            }
+        }
+        stage('Stop Old Container') {
+            steps {
+                sh "docker stop ${CONTAINER_NAME} || true; docker rm ${CONTAINER_NAME} || true"
+            }
+        }
+        stage('Run New Container') {
+            steps {
+                sh "docker run -d --name ${CONTAINER_NAME} -p ${APP_PORT}:8080 ${IMAGE_NAME}:latest"
+            }
+        }
+    }
+}
+```
+
+In Jenkins, I created a new Pipeline job, set it to pull the pipeline script from SCM (my Git repo), pointed the script path at the Jenkinsfile, and triggered a build manually to test it end to end. Every push after this can be built the same way, either manually or by adding a webhook.
+
+## Screenshots
+
+Included separately / attached below:
+- Jenkins dashboard with the pipeline job listed
+- Successful pipeline run - all stages green
+- `docker images` output showing the built image
+- `docker ps` output showing the running container
+- Application running in the browser (Swagger UI)
+
+## Issues I ran into
+
+Port conflict between Jenkins and the app - both default to 8080. Fixed by running Jenkins on host port 9090 instead.
+
+Jenkins couldn't run docker commands at first, since it had no access to the Docker engine. Fixed by mounting `/var/run/docker.sock` into the Jenkins container and installing the Docker Pipeline plugin.
+
+The app container couldn't connect to MySQL when both were run separately with plain `docker run`. Switched to docker-compose so they share a network and the app can reach the database by its service name.
+
+Re-running the pipeline failed the second time because a container with the same name already existed. Added a stage that stops and removes the old container before starting the new one.
