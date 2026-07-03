@@ -2,61 +2,40 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "employee-management-system"
-        CONTAINER_NAME = "employee-app"
-        APP_PORT = "8080"
+        COMPOSE_PROJECT_NAME = "employee_management_hub"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/DivyanshGarg380/TechM_POC_Task.git'
+                git branch: 'main',
+                    url: 'https://github.com/DivyanshGarg380/TechM_POC_Task.git'
             }
         }
 
-        stage('Build with Maven') {
+        stage('Build & Deploy') {
             steps {
-                dir('Backend') {
-                    sh 'mvn -B clean package -DskipTests'
-                }
+                sh 'docker compose down || true'
+                sh 'docker compose up -d --build'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Verify Running Containers') {
             steps {
-                dir('Backend') {
-                    sh "docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} -t ${IMAGE_NAME}:latest ."
-                }
-            }
-        }
-
-        stage('Stop Old Container') {
-            steps {
-                sh """
-                    docker stop ${CONTAINER_NAME} || true
-                    docker rm ${CONTAINER_NAME} || true
-                """
-            }
-        }
-
-        stage('Run New Container') {
-            steps {
-                sh """
-                    docker run -d --name ${CONTAINER_NAME} \
-                        -p ${APP_PORT}:8080 \
-                        ${IMAGE_NAME}:latest
-                """
+                sh 'docker ps'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully. App is running at http://localhost:8080'
+            echo 'Application deployed successfully!'
+            echo 'Swagger UI: http://localhost:8080/swagger-ui/index.html'
         }
+
         failure {
-            echo 'Pipeline failed. Check console.'
+            echo 'Pipeline failed. Check the console output.'
         }
     }
 }
