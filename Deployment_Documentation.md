@@ -155,11 +155,11 @@ Whenever a build is triggered, Jenkins:
 
 The following screenshots are included with this report:
 
-![alt text](<Screenshot 2026-07-03 191316.png>) 
-![alt text](<Screenshot 2026-07-03 191148.png>) 
-![alt text](<Screenshot 2026-07-03 191227.png>) 
-![alt text](<Screenshot 2026-07-03 191237.png>) 
-![alt text](<Screenshot 2026-07-03 191254.png>)
+![alt text](<assets/Screenshot 2026-07-03 191316.png>) 
+![alt text](<assets/Screenshot 2026-07-03 191148.png>) 
+![alt text](<assets/Screenshot 2026-07-03 191227.png>) 
+![alt text](<assets/Screenshot 2026-07-03 191237.png>) 
+![alt text](<assets/Screenshot 2026-07-03 191254.png>)
 
 ---
 
