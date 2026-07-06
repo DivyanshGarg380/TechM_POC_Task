@@ -173,15 +173,7 @@ Both Jenkins and the Spring Boot application use port **8080** by default.
 
 ---
 
-### 2. Database Connection Failure
-
-Initially, the Spring Boot application failed to connect to MySQL because the configured database names did not match.
-
-**Solution:** Updated the database configuration in `docker-compose.yml` so that both MySQL and the Spring Boot application referenced the same database.
-
----
-
-### 3. Jenkins Could Not Execute Docker Commands
+### 2. Jenkins Could Not Execute Docker Commands
 
 The default Jenkins container did not have Docker installed.
 
@@ -189,7 +181,7 @@ The default Jenkins container did not have Docker installed.
 
 ---
 
-### 4. Docker Compose Not Available
+### 3. Docker Compose Not Available
 
 Although Docker CLI was available, Docker Compose commands initially failed.
 
@@ -197,15 +189,7 @@ Although Docker CLI was available, Docker Compose commands initially failed.
 
 ---
 
-### 5. GitHub Authentication
-
-The Jenkins pipeline initially failed to clone the repository because it was private.
-
-**Solution:** Changed the repository visibility to public for this proof-of-concept project, allowing Jenkins to clone it without credentials.
-
----
-
-### 6. Maven Not Found
+### 4. Maven Not Found
 
 The original Jenkins pipeline attempted to execute Maven directly inside the Jenkins container, resulting in a `mvn: not found` error.
 
