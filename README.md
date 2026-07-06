@@ -135,25 +135,6 @@ PUT /api/employees/{id}
 DELETE /api/employees/{id}
 ```
 
-## Validation Rules
-
-* Name cannot be empty
-* Email must be valid
-* Department cannot be empty
-* Salary must be positive
-* Joining Date cannot be null
-
-## Learning Outcomes
-
-* Spring Boot Fundamentals
-* REST API Development
-* Spring Data JPA
-* MySQL Integration
-* Bean Validation
-* Global Exception Handling
-* Pagination and Sorting
-* Layered Architecture Design
-
 ## Author
 
 Divyansh Garg
