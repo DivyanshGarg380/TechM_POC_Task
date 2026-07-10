@@ -39,7 +39,7 @@ docker-compose up -d --build
 The backend was verified by opening Swagger UI:
 
 ```
-http://localhost:8080/swagger-ui/index.html
+http://localhost:8080/swagger-ui/index.html  
 ```
 
 ---
@@ -208,5 +208,3 @@ The completed CI/CD pipeline is capable of:
 - Deploying the complete application stack using Docker Compose.
 - Verifying successful deployment through Jenkins.
 - Serving the backend application through Swagger UI for testing.
-
-This setup demonstrates a complete containerized deployment workflow using Spring Boot, MySQL, Docker, Docker Compose, and Jenkins.
