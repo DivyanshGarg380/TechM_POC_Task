@@ -86,6 +86,43 @@ docker network create ems-network
 docker compose -f docker-compose.mysql.yml up -d
 ```
 
+## Jenkins Pipeline Screenshots
+
+The successful execution of both independent Jenkins pipelines is shown below.
+
+<p align="center">
+  <img src="assets_2/AllPipelines.png" alt="All Jenkins Pipelines" width="100%">
+</p>
+
+### Backend Pipeline
+
+<p align="center">
+  <img src="assets_2/Backend2.png" alt="Backend Jenkins Pipeline" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets_2/Backend2_build.png" alt="Backend Jenkins Pipeline Build Successful" width="100%">
+</p>
+
+<p align="center">
+  <em>Figure 1. Successful execution of the backend CI/CD pipeline (<code>Jenkinsfile.backend</code>). The pipeline performs source checkout, Docker image build, container deployment, and deployment verification.</em>
+</p>
+
+### Frontend Pipeline
+
+<p align="center">
+  <img src="assets_2/Frontend2.png" alt="Frontend Jenkins Pipeline" width="100%">
+</p>
+
+<p align="center">
+  <img src="assets_2/Frontend2_build.png" alt="Frontend Jenkins Pipeline Build Successful" width="100%">
+</p>
+
+
+<p align="center">
+  <em>Figure 2. Successful execution of the frontend CI/CD pipeline (<code>Jenkinsfile.frontend</code>). The pipeline builds the Angular application, creates the Docker image, deploys the Nginx container, and verifies the deployment.</em>
+</p>
+
 The backend pipeline checks out the code, runs `docker build` against `Backend/Dockerfile` (Maven compilation happens inside that multi-stage build, so Jenkins itself doesn't need Maven installed), then runs the container on `ems-network` on port 8080, and finishes with `docker ps` to confirm it's up.
 
 The frontend pipeline follows the same shape: checkout, `docker build` against `Frontend/Dockerfile` (Angular build plus nginx, also multi-stage), run the container on `ems-network` on port 4200, then verify with `docker ps`.
