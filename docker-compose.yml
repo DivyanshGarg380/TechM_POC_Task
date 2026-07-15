@@ -1,5 +1,4 @@
 version: "3.8"
-
 services:
   mysql:
     image: mysql:8.0
@@ -16,6 +15,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - ems-network
 
   app:
     build: ./Backend
@@ -29,6 +30,22 @@ services:
       SPRING_DATASOURCE_PASSWORD: root
     ports:
       - "8080:8080"
+    networks:
+      - ems-network
+
+  frontend:
+    build: ./Frontend
+    container_name: employee-frontend
+    depends_on:
+      - app
+    ports:
+      - "4200:80"
+    networks:
+      - ems-network
+
+networks:
+  ems-network:
+    name: ems-network
 
 volumes:
   mysql_data:

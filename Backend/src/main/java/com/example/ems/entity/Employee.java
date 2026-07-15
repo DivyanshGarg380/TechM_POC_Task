@@ -1,5 +1,6 @@
 package com.example.ems.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -16,22 +17,25 @@ public class Employee {
     @Column(unique = true)
     private String email;
 
-    private String department;
-
     private Double salary;
 
     private LocalDate joiningDate;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    @JsonIgnoreProperties("employees")
+    private Department department;
+
     public Employee() {
     }
 
-    public Employee(Long id, String name, String email, String department, Double salary, LocalDate joiningDate) {
+    public Employee(Long id, String name, String email, Double salary, LocalDate joiningDate, Department department) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.department = department;
         this.salary = salary;
         this.joiningDate = joiningDate;
+        this.department = department;
     }
 
     public Long getId() { return id; }
@@ -46,10 +50,6 @@ public class Employee {
 
     public void setEmail(String email) { this.email = email; }
 
-    public String getDepartment() { return department; }
-
-    public void setDepartment(String department) { this.department = department; }
-
     public Double getSalary() { return salary; }
 
     public void setSalary(Double salary) { this.salary = salary; }
@@ -57,4 +57,8 @@ public class Employee {
     public LocalDate getJoiningDate() { return joiningDate; }
 
     public void setJoiningDate(LocalDate joiningDate) { this.joiningDate = joiningDate; }
+
+    public Department getDepartment() { return department; }
+
+    public void setDepartment(Department department) { this.department = department; }
 }

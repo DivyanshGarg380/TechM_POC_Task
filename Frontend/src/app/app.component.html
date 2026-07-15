@@ -26,10 +26,19 @@
 
     <button
       class="btn btn-secondary"
-      (click)="searchTerm=''; load()"
+      (click)="searchTerm=''; departmentFilter=null; load()"
     >
       Reset
     </button>
+
+    <select
+      class="search"
+      [(ngModel)]="departmentFilter"
+      (change)="filterByDepartment()"
+    >
+      <option [ngValue]="null">All Departments</option>
+      <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.departmentName }}</option>
+    </select>
   </div>
 
   <div class="card-grid">
@@ -65,7 +74,7 @@
 
         <div class="detail">
           <span class="icon">🏢</span>
-          <span>{{ emp.department }}</span>
+          <span>{{ emp.department?.departmentName || '—' }} <ng-container *ngIf="emp.department?.location">({{ emp.department?.location }})</ng-container></span>
         </div>
 
         <div class="detail">
@@ -171,12 +180,14 @@
         />
 
         <label>Department</label>
-        <input
-          type="text"
-          [(ngModel)]="form.department"
-          name="department"
+        <select
+          [(ngModel)]="form.departmentId"
+          name="departmentId"
           required
-        />
+        >
+          <option [ngValue]="null" disabled>Select a department</option>
+          <option *ngFor="let d of departments()" [ngValue]="d.id">{{ d.departmentName }}</option>
+        </select>
 
         <label>Salary</label>
         <input

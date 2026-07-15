@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME = "ems-backend"
+        CONTAINER_NAME = "employee-app"
+        NETWORK_NAME = "ems-network"
+        APP_PORT = "8080"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/DivyanshGarg380/TechM_POC_Task.git'
+            }
+        }
+
+        stage('Build Spring Boot App') {
+            steps {
+                dir('Backend') {
+                    sh 'docker build -t ${IMAGE_NAME}:latest .'
+                }
+            }
+        }
+
+        stage('Deploy Backend Container') {
+            steps {
+                sh '''
+                    docker network create ${NETWORK_NAME} || true
+                    docker rm -f ${CONTAINER_NAME} || true
+                    docker run -d \
+                        --name ${CONTAINER_NAME} \
+                        --network ${NETWORK_NAME} \
+                        -p ${APP_PORT}:8080 \
+                        -e SPRING_DATASOURCE_URL=jdbc:mysql://employee-mysql:3306/employee_db \
+                        -e SPRING_DATASOURCE_USERNAME=root \
+                        -e SPRING_DATASOURCE_PASSWORD=root \
+                        ${IMAGE_NAME}:latest
+                '''
+            }
+        }
+
+        stage('Verify Running Container') {
+            steps {
+                sh 'docker ps --filter "name=${CONTAINER_NAME}"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Backend deployed successfully!'
+            echo 'Swagger UI: http://localhost:8080/swagger-ui/index.html'
+        }
+        failure {
+            echo 'Backend pipeline failed. Check the console output.'
+        }
+    }
+}

@@ -37,6 +37,11 @@ public class EmployeeController {
         return ResponseEntity.ok(service.searchByName(name));
     }
 
+    @GetMapping("/department/{departmentId}")
+    public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable Long departmentId) {
+        return ResponseEntity.ok(service.getEmployeesByDepartment(departmentId));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Employee> updateEmployee(@PathVariable Long id, @Valid @RequestBody EmployeeRequest request) {
         return ResponseEntity.ok(service.updateEmployee(id, request));

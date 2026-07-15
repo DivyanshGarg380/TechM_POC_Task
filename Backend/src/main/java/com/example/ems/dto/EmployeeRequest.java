@@ -1,7 +1,11 @@
 package com.example.ems.dto;
 
-import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public class EmployeeRequest {
 
@@ -12,8 +16,8 @@ public class EmployeeRequest {
     @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank(message = "Department is required")
-    private String department;
+    @NotNull(message = "Department id is required")
+    private Long departmentId;
 
     @Positive(message = "Salary must be positive")
     private Double salary;
@@ -29,9 +33,9 @@ public class EmployeeRequest {
 
     public void setEmail(String email) { this.email = email; }
 
-    public String getDepartment() { return department; }
+    public Long getDepartmentId() { return departmentId; }
 
-    public void setDepartment(String department) { this.department = department; }
+    public void setDepartmentId(Long departmentId) { this.departmentId = departmentId; }
 
     public Double getSalary() { return salary; }
 
