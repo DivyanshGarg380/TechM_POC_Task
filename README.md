@@ -129,7 +129,7 @@ GET /api/employees/search?name=div
 PUT /api/employees/{id}
 ```
 
-### Delete Employee
+### Delete Employee 
 
 ```http
 DELETE /api/employees/{id}
