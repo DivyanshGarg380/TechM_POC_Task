@@ -140,6 +140,7 @@ pipeline {
         }
     }
 }
+
 ```
 
 Whenever a build is triggered, Jenkins:
